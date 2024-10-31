@@ -10,6 +10,8 @@ using UnityEngine;
 
 public class ClientSocket : MonoBehaviour
 {
+	public static ClientSocket Instance;
+	
 	[DllImport("__Internal")]
 	private static extern void StartSocket();
 
@@ -29,8 +31,9 @@ public class ClientSocket : MonoBehaviour
 	private bool socketClosing;
 #endif
 
-	void Start()
+	void Awake()
 	{
+		Instance = this;
 #if UNITY_EDITOR
 		Task.Run(async () =>
 		{
@@ -109,6 +112,11 @@ public class ClientSocket : MonoBehaviour
 				break;
 			case 1:
 				//var packet = JsonUtility.FromJson<AuthPacket>(message);
+				break;
+			case 5:
+				// AuthResultPacket
+				var authResult = JsonUtility.FromJson<AuthResultPacket>(message);
+				AuthForm.Instance.OnAuthResult(authResult);
 				break;
 		}
 	}
