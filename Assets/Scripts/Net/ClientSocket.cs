@@ -21,7 +21,7 @@ public class ClientSocket : MonoBehaviour
 	[DllImport("__Internal")]
 	private static extern void ConsoleLog(string message);
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || PLATFORM_STANDALONE_WIN
 	public string Hostname = "localhost";
 	public int Port = 8887;
 	private TcpClient tcpClient;
@@ -34,7 +34,7 @@ public class ClientSocket : MonoBehaviour
 	void Awake()
 	{
 		Instance = this;
-#if UNITY_EDITOR
+#if UNITY_EDITOR || PLATFORM_STANDALONE_WIN
 		Task.Run(async () =>
 		{
 			Debug.Log("Connecting to server...");
@@ -80,7 +80,7 @@ public class ClientSocket : MonoBehaviour
 #endif
 	}
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || PLATFORM_STANDALONE_WIN
 	void Update()
 	{
 		while (messageQueue.TryDequeue(out string message))
@@ -96,7 +96,7 @@ public class ClientSocket : MonoBehaviour
 
 	public void OnMessage(string message)
 	{
-#if UNITY_EDITOR
+#if UNITY_EDITOR || PLATFORM_STANDALONE_WIN
 		Debug.Log($"Server: {message}");
 #else
 		ConsoleLog($"Server: {message}");
@@ -124,7 +124,7 @@ public class ClientSocket : MonoBehaviour
 	public void SendPacket(IPacket packet)
 	{
 		var message = JsonUtility.ToJson(packet);
-#if UNITY_EDITOR
+#if UNITY_EDITOR || PLATFORM_STANDALONE_WIN
 		streamWriter.WriteLine(message);
 		Debug.Log($"Client: {message}");
 #else
