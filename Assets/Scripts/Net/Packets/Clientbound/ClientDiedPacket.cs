@@ -1,12 +1,12 @@
 ﻿namespace CISOServer.Net.Packets.Clientbound
 {
-	public class ClientLeavedPacket : IPacket
+	public class ClientDiedPacket : IPacket
 	{
-		public int id = 12;
+		public int id = 25;
 
 		public int clientId;
 
-		public ClientLeavedPacket(int clientId)
+		public ClientDiedPacket(int clientId)
 		{
 			this.clientId = clientId;
 		}

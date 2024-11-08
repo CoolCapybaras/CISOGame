@@ -2,7 +2,7 @@
 {
 	public class ClientJoinedPacket : IPacket
 	{
-		public int id = 7;
+		public int id = 11;
 
 		public ClientDTO client;
 

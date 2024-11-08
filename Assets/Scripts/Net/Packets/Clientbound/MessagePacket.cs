@@ -2,7 +2,7 @@
 {
 	public class MessagePacket : IPacket
 	{
-		public int id = 0;
+		public int id = 1;
 
 		public int type;
 		public string text;
