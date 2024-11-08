@@ -2,7 +2,7 @@
 {
 	public class JoinLobbyPacket : IPacket
 	{
-		public int id = 3;
+		public int id = 5;
 
 		public int lobbyId;
 

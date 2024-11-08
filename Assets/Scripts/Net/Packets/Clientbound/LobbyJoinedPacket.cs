@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
-
-namespace CISOServer.Net.Packets.Clientbound
+﻿namespace CISOServer.Net.Packets.Clientbound
 {
 	public class LobbyJoinedPacket : IPacket
 	{
-		public int id = 6;
+		public int id = 10;
 
-		public List<ClientDTO> clients;
+		public int clientId;
+		public Lobby lobby;
 
-		public LobbyJoinedPacket(List<ClientDTO> clients)
+		public LobbyJoinedPacket(int clientId, Lobby lobby)
 		{
-			this.clients = clients;
+			this.clientId = clientId;
+			this.lobby = lobby;
 		}
 	}
 }

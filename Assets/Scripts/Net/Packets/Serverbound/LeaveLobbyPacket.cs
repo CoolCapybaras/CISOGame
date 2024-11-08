@@ -2,6 +2,6 @@
 {
 	public class LeaveLobbyPacket : IPacket
 	{
-		public int id = 4;
+		public int id = 6;
 	}
 }

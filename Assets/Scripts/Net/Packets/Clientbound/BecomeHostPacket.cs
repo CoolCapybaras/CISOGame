@@ -2,6 +2,6 @@
 {
 	public class BecomeHostPacket : IPacket
 	{
-		public int id = 9;
+		public int id = 13;
 	}
 }
