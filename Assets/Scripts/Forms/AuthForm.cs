@@ -48,20 +48,15 @@ public class AuthForm : BaseForm, IForm
 
     public void OnAuthResult(AuthResultPacket packet)
     {
-        if (packet.flags.HasFlag(AuthResultFlags.Ok))
+        if (packet.type == AuthResultType.Ok)
         {
             OnAuthSuccessful();
+            if (!string.IsNullOrEmpty(packet.token))
+                PlayerPrefs.SetString("auth_token", packet.token);
         }
 
-        if (packet.flags.HasFlag(AuthResultFlags.HasToken))
-        {
-            PlayerPrefs.SetString("auth_token", packet.token);
-        }
-
-        if (packet.flags.HasFlag(AuthResultFlags.HasUrl))
-        {
+        if (packet.type == AuthResultType.Url)
             Application.OpenURL(packet.url);
-        }
     }
 
     public void OnAuthSuccessful()

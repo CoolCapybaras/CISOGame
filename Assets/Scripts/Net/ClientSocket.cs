@@ -113,10 +113,14 @@ public class ClientSocket : MonoBehaviour
 			case 1:
 				//var packet = JsonUtility.FromJson<AuthPacket>(message);
 				break;
-			case 5:
+			case 8:
 				// AuthResultPacket
 				var authResult = JsonUtility.FromJson<AuthResultPacket>(message);
 				AuthForm.Instance.OnAuthResult(authResult);
+				break;
+			case 9:
+				var lobbySearchResult = JsonUtility.FromJson<SearchLobbyResultPacket>(message);
+				JoinGameForm.Instance.OnSearchLobbyResult(lobbySearchResult);
 				break;
 		}
 	}

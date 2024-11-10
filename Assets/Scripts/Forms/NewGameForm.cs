@@ -25,6 +25,6 @@ public class NewGameForm : BaseForm, IForm
 
     public void OnCreateLobbyPressed()
     {
-        ClientSocket.Instance.SendPacket(new CreateLobbyPacket());
+        ClientSocket.Instance.SendPacket(new CreateLobbyPacket(5));
     }
 }
