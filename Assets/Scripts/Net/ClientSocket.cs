@@ -122,6 +122,18 @@ public class ClientSocket : MonoBehaviour
 				var lobbySearchResult = JsonUtility.FromJson<SearchLobbyResultPacket>(message);
 				JoinGameForm.Instance.OnSearchLobbyResult(lobbySearchResult);
 				break;
+			case 10:
+				var lobbyJoinedPacket = JsonUtility.FromJson<LobbyJoinedPacket>(message);
+				GameForm.Instance.OnLobbyJoined(lobbyJoinedPacket);
+				break;
+			case 11:
+				var clientJoinedPacket = JsonUtility.FromJson<ClientJoinedPacket>(message);
+				GameForm.Instance.OnClientJoinedPacket(clientJoinedPacket);
+				break;
+			case 12:
+				var clientLeavedPacket = JsonUtility.FromJson<ClientLeavedPacket>(message);
+				GameForm.Instance.OnClientLeavedPacket(clientLeavedPacket);
+				break;
 		}
 	}
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using CISOServer.Net.Packets.Clientbound;
 using CISOServer.Net.Packets.Serverbound;
+using Models;
 using TMPro;
 using UnityEngine;
 
@@ -53,6 +54,7 @@ public class AuthForm : BaseForm, IForm
             OnAuthSuccessful();
             if (!string.IsNullOrEmpty(packet.token))
                 PlayerPrefs.SetString("auth_token", packet.token);
+            GameManager.localClient = new ClientDTO() { Id = packet.clientId, Name = packet.name, Avatar = packet.avatar };
         }
 
         if (packet.type == AuthResultType.Url)

@@ -9,6 +9,7 @@ public enum CardType
 	Reflection
 }
 
+[Serializable]
 public class Card
 {
 	public CardType Type;

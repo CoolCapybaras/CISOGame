@@ -39,6 +39,7 @@ public class JoinGameForm : BaseForm, IForm
     private void Initialize()
     {
         Utils.DestroyChildren(form.lobbiesParent);
+        _lobbies.Clear();
         ClientSocket.Instance.SendPacket(new SearchLobbyPacket(SearchLobbyType.Clear, 0));
         ClientSocket.Instance.SendPacket(new SearchLobbyPacket(SearchLobbyType.Search, 10));
     }
