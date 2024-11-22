@@ -134,6 +134,18 @@ public class ClientSocket : MonoBehaviour
 				var clientLeavedPacket = JsonUtility.FromJson<ClientLeavedPacket>(message);
 				GameForm.Instance.OnClientLeavedPacket(clientLeavedPacket);
 				break;
+			case 19:
+				var syncHandPacket = JsonUtility.FromJson<SyncHandPacket>(message);
+				GameForm.Instance.OnSyncHandPacket(syncHandPacket);
+				break;
+			case 20:
+				var clientsGotCardsPacket = JsonUtility.FromJson<ClientsGotCardsPacket>(message);
+				GameForm.Instance.OnClientsGotCards(clientsGotCardsPacket);
+				break;
+			case 21:
+				var clientTurnPacket = JsonUtility.FromJson<ClientTurnPacket>(message);
+				GameForm.Instance.OnClientTurnPacket(clientTurnPacket);
+				break;
 		}
 	}
 

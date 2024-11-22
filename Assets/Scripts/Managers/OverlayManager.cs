@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Models;
 using UnityEngine;
 
 public class OverlayManager : MonoBehaviour
@@ -37,5 +38,11 @@ public class OverlayManager : MonoBehaviour
         form.settingsButton.SetActive(settings.needSettingsButton);
         form.leaveButton.SetActive(settings.needLeaveButton);
         form.backButton.SetActive(settings.needBackButton);
+    }
+
+    public void OnBackButtonPressed()
+    {
+        FormManager.Instance.ChangeFormToLast();
+        GameManager.EnsureLeavedLobby();
     }
 }
