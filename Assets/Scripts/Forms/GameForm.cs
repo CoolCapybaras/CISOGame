@@ -28,6 +28,13 @@ public class GameForm : MonoBehaviour, IForm
         public Sprite cardBack;
 
         public GameObject smallCardPrefab;
+
+        public GameObject startGameButton;
+
+        public Color32 defaultPlayerBorderColor;
+        public Color32 greenPlayerBorderColor;
+
+        public GameObject gameButtons;
     }
     
     public Form form;
@@ -35,6 +42,8 @@ public class GameForm : MonoBehaviour, IForm
     private List<Card> _clientCards = new();
 
     private Dictionary<int, GameObject> _clientObjects = new();
+
+    private int _lastTurnId = -1;
     
     public void OnActive()
     {
@@ -54,6 +63,7 @@ public class GameForm : MonoBehaviour, IForm
 
     private void Initialize()
     {
+        form.startGameButton.SetActive(_currentLobby.Players.Count == 1);
         RecreatePlayers();
     }
 
@@ -114,6 +124,11 @@ public class GameForm : MonoBehaviour, IForm
         ClientSocket.Instance.SendPacket(new StartGamePacket());
     }
 
+    public void OnGameStarted()
+    {
+        form.startGameButton.SetActive(false);
+    }
+
     public void OnSyncHandPacket(SyncHandPacket packet)
     {
         _clientCards.Clear();
@@ -163,6 +178,27 @@ public class GameForm : MonoBehaviour, IForm
 
     public void OnClientTurnPacket(ClientTurnPacket packet)
     {
-        
+        if (_lastTurnId != -1)
+        {
+            var lastTurnObj = _lastTurnId == localClientId ? form.localClientObj : _clientObjects[_lastTurnId];
+            lastTurnObj.GetComponent<Image>().color = form.defaultPlayerBorderColor;
+        }
+
+        _lastTurnId = packet.clientId;
+        var playerObj = packet.clientId == localClientId ? form.localClientObj : _clientObjects[packet.clientId];
+        playerObj.GetComponent<Image>().color = form.greenPlayerBorderColor;
+
+        form.gameButtons.SetActive(localClientId == packet.clientId);
+    }
+
+    public void OnBecomeHostPacket()
+    {
+        if (!_currentLobby.IsStarted)
+            form.startGameButton.SetActive(true);
+    }
+
+    public void OnEndTurnPressed()
+    {
+        ClientSocket.Instance.SendPacket(new GameActionPacket(action: GameAction.EndTurn));
     }
 }

@@ -146,6 +146,12 @@ public class ClientSocket : MonoBehaviour
 				var clientTurnPacket = JsonUtility.FromJson<ClientTurnPacket>(message);
 				GameForm.Instance.OnClientTurnPacket(clientTurnPacket);
 				break;
+			case 13:
+				GameForm.Instance.OnBecomeHostPacket();
+				break;
+			case 17:
+				GameForm.Instance.OnGameStarted();
+				break;
 		}
 	}
 
