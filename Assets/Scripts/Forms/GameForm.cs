@@ -180,6 +180,7 @@ public class GameForm : MonoBehaviour, IForm
 
         card.transform.parent = form.tableArea;
         card.canDrag = false;
+        SetCardsDraggable(false);
     }
 
     public void OnPlayerPressed(int playerId)
@@ -194,6 +195,14 @@ public class GameForm : MonoBehaviour, IForm
     public void OnDiscardCardsPacket()
     {
         Utils.DestroyChildren(form.tableArea);
+    }
+
+    private void SetCardsDraggable(bool canDrag)
+    {
+        for (int i = 0; i < form.localCardsParent.childCount; ++i)
+        {
+            form.localCardsParent.GetChild(i).GetComponent<DraggableCard>().canDrag = canDrag;
+        }
     }
 
     private void InstantiateSmallCard(GameObject playerObj)
@@ -214,7 +223,8 @@ public class GameForm : MonoBehaviour, IForm
         _lastTurnId = packet.clientId;
         var playerObj = packet.clientId == localClientId ? form.localClientObj : _clientObjects[packet.clientId];
         playerObj.GetComponent<Image>().color = form.greenPlayerBorderColor;
-
+        
+        SetCardsDraggable(localClientId == packet.clientId);
         form.gameButtons.SetActive(localClientId == packet.clientId);
     }
 
