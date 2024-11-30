@@ -12,7 +12,7 @@ public class DraggableCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private Vector2 _dragOffset; // Смещение между курсором и центром карты
     private int _siblingIndex;
 
-    public bool canDrag = false;
+    public bool canDrag = true;
     public Card card;
 
     private void Start()
