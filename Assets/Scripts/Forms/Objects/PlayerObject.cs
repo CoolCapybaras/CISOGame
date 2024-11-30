@@ -8,6 +8,6 @@ public class PlayerObject : MonoBehaviour
 
     public void OnPressed()
     {
-        
+        GameForm.Instance.OnPlayerPressed(clientId);
     }
 }

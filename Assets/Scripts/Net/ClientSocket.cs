@@ -152,6 +152,9 @@ public class ClientSocket : MonoBehaviour
 			case 17:
 				GameForm.Instance.OnGameStarted();
 				break;
+			case 23:
+				GameForm.Instance.OnDiscardCardsPacket();
+				break;
 		}
 	}
 

@@ -44,6 +44,9 @@ public class GameForm : MonoBehaviour, IForm
     private Dictionary<int, GameObject> _clientObjects = new();
 
     private int _lastTurnId = -1;
+
+    private bool _waitForPlayerPick;
+    private DraggableCard _currentDroppedCard;
     
     public void OnActive()
     {
@@ -167,6 +170,30 @@ public class GameForm : MonoBehaviour, IForm
         obj.GetComponent<Image>().sprite = cardObj.cardFront;
         form.localCardsParent.gameObject.GetComponent<CardHandLayout>().UpdateLayout();
         obj.GetComponent<DraggableCard>().tableArea = form.tableArea;
+        obj.GetComponent<DraggableCard>().card = card;
+    }
+
+    public void OnCardDropped(DraggableCard card)
+    {
+        _waitForPlayerPick = true;
+        _currentDroppedCard = card;
+
+        card.transform.parent = form.tableArea;
+        card.canDrag = false;
+    }
+
+    public void OnPlayerPressed(int playerId)
+    {
+        if (_waitForPlayerPick)
+        {
+            _waitForPlayerPick = false;
+            ClientSocket.Instance.SendPacket(new GameActionPacket(GameAction.PlayCard, _currentDroppedCard.card, playerId));
+        }
+    }
+
+    public void OnDiscardCardsPacket()
+    {
+        Utils.DestroyChildren(form.tableArea);
     }
 
     private void InstantiateSmallCard(GameObject playerObj)

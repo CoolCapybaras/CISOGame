@@ -12,6 +12,9 @@ public class DraggableCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private Vector2 _dragOffset; // Смещение между курсором и центром карты
     private int _siblingIndex;
 
+    public bool canDrag = false;
+    public Card card;
+
     private void Start()
     {
         _rectTransform = GetComponent<RectTransform>(); // Получаем RectTransform карты
@@ -24,6 +27,8 @@ public class DraggableCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     // Вызывается при начале перетаскивания
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (!canDrag)
+            return;
         _originalPosition = _rectTransform.anchoredPosition;
         _canvasGroup.blocksRaycasts = false; // Отключаем raycast, чтобы карта "пропускала" сквозь себя
         _siblingIndex = transform.GetSiblingIndex();
@@ -41,6 +46,9 @@ public class DraggableCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     // Вызывается во время перетаскивания
     public void OnDrag(PointerEventData eventData)
     {
+        if (!canDrag)
+            return;
+        
         // Перемещаем карту за курсором с учетом смещения
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             _canvas.transform as RectTransform,
@@ -52,9 +60,13 @@ public class DraggableCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         _rectTransform.anchoredPosition = localPoint - _dragOffset; // Учитываем смещение
     }
 
+    
     // Вызывается, когда карта отпущена
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (!canDrag)
+            return;        
+        
         _canvasGroup.blocksRaycasts = true; // Включаем raycast обратно
         transform.SetSiblingIndex(_siblingIndex);
         // Проверяем, находится ли карта в области стола
@@ -74,7 +86,6 @@ public class DraggableCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private void OnCardDroppedOnTable()
     {
         Debug.Log("Карта брошена на стол: " + gameObject.name);
-        // Здесь можно вызвать любой метод для обработки карты
-        // Например, передать карту в колоду стола, удалить из руки и т.д.
+        GameForm.Instance.OnCardDropped(this);
     }
 }
