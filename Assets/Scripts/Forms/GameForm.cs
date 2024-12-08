@@ -48,7 +48,9 @@ public class GameForm : MonoBehaviour, IForm
     private bool _waitForPlayerPick;
     private DraggableCard _currentDroppedCard;
     
-    private const int MaxHealth = 4;
+    private const int MaxHealth = 3;
+
+    private int _lastAttackingPlayerId;
     
     public void OnActive()
     {
@@ -70,6 +72,25 @@ public class GameForm : MonoBehaviour, IForm
     {
         form.startGameButton.SetActive(_currentLobby.Players.Count == 1);
         RecreatePlayers();
+        ClearTable();
+    }
+
+    private void ClearTable()
+    {
+        _clientCards.Clear();
+        Utils.DestroyChildren(form.localCardsParent);
+        OnDiscardCardsPacket();
+        form.gameButtons.SetActive(false);
+    }
+
+    public void OnClientPlayedCard(ClientPlayedCardPacket packet)
+    {
+        var obj = Instantiate(form.cardPrefab, form.tableArea);
+        var card = CardManager.Instance.GetCard(packet.card.Type);
+        obj.GetComponent<Image>().sprite = card.cardFront;
+
+        if (packet.targetId == localClientId)
+            _lastAttackingPlayerId = packet.clientId;
     }
 
     public void OnClientJoinedPacket(ClientJoinedPacket packet)
@@ -190,14 +211,18 @@ public class GameForm : MonoBehaviour, IForm
 
     public void OnCardDropped(DraggableCard card)
     {
-        _waitForPlayerPick = true;
         _currentDroppedCard = card;
-
         card.transform.SetParent(form.tableArea, false);
         card.transform.localRotation = Quaternion.identity;
         card.canDrag = false;
         SetCardsDraggable(false);
         UpdateLocalHandLayout();
+        if (card.card.Type == CardType.Defense || card.card.Type == CardType.Counterattack)
+        {
+            ClientSocket.Instance.SendPacket(new GameActionPacket(GameAction.PlayCard, _currentDroppedCard.card, _lastAttackingPlayerId));
+            return;
+        }
+        _waitForPlayerPick = true;
     }
 
     public void OnCardTypeError()

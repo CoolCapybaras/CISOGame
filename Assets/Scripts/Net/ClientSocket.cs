@@ -165,6 +165,10 @@ public class ClientSocket : MonoBehaviour
 				var clientHealthPacket = JsonUtility.FromJson<ClientHealthPacket>(message);
 				GameForm.Instance.OnClientHealthPacket(clientHealthPacket);
 				break;
+			case 22:
+				var clientPlayedCardPacket = JsonUtility.FromJson<ClientPlayedCardPacket>(message); 
+				GameForm.Instance.OnClientPlayedCard(clientPlayedCardPacket);
+				break;
 		}
 	}
 
