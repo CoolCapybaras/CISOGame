@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 public class DraggableCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
@@ -10,7 +11,7 @@ public class DraggableCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private CanvasGroup _canvasGroup; // CanvasGroup для управления блокировкой
     private RectTransform _rectTransform; // RectTransform карты
     private Vector2 _dragOffset; // Смещение между курсором и центром карты
-    private int _siblingIndex;
+    public int siblingIndexBeforeDrag;
 
     public bool canDrag = true;
     public Card card;
@@ -31,7 +32,7 @@ public class DraggableCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             return;
         _originalPosition = _rectTransform.anchoredPosition;
         _canvasGroup.blocksRaycasts = false; // Отключаем raycast, чтобы карта "пропускала" сквозь себя
-        _siblingIndex = transform.GetSiblingIndex();
+        siblingIndexBeforeDrag = transform.GetSiblingIndex();
         transform.SetSiblingIndex(_originalParent.childCount);
         // Вычисляем смещение между курсором и центром карты
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -68,7 +69,6 @@ public class DraggableCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             return;        
         
         _canvasGroup.blocksRaycasts = true; // Включаем raycast обратно
-        transform.SetSiblingIndex(_siblingIndex);
         // Проверяем, находится ли карта в области стола
         if (RectTransformUtility.RectangleContainsScreenPoint(tableArea, eventData.position, _canvas.worldCamera))
         {
@@ -79,6 +79,7 @@ public class DraggableCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         {
             // Если не попала, возвращаем карту на место
             _rectTransform.anchoredPosition = _originalPosition;
+            transform.SetSiblingIndex(siblingIndexBeforeDrag);
         }
     }
 

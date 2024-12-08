@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class CardHandLayout : MonoBehaviour
 {
-    private List<RectTransform> _cards = new(); // Ссылки на RectTransform карт
     public float curveRadius = 200f; // Радиус кривой
     public float angleRange = 90f; // Угол, на котором располагаются карты
     public float horizontalSpacingFactor = 50f; // Горизонтальное смещение
@@ -13,18 +12,18 @@ public class CardHandLayout : MonoBehaviour
     
     public void UpdateLayout()
     {
-        _cards.Clear();
+        List<RectTransform> cards = new();
         foreach (var obj in transform)
-            _cards.Add(obj as RectTransform);
+            cards.Add(obj as RectTransform);
         
-        int cardCount = _cards.Count;
+        int cardCount = cards.Count;
         if (cardCount == 0) return;
 
         if (cardCount == 1)
         {
             // Если всего одна карта, ставим ее в центр и убираем поворот
-            _cards[0].anchoredPosition = Vector2.zero; // Центр
-            _cards[0].rotation = Quaternion.identity; // Без поворота
+            cards[0].anchoredPosition = Vector2.zero; // Центр
+            cards[0].rotation = Quaternion.identity; // Без поворота
             return;
         }
 
@@ -47,29 +46,14 @@ public class CardHandLayout : MonoBehaviour
             y -= Mathf.Abs(angle) / angleRange * verticalSpacingFactor;
 
             // Обновляем позицию и поворот карты
-            _cards[i].anchoredPosition = new Vector2(x, -y); // Устанавливаем позицию
-            _cards[i].rotation = Quaternion.Euler(0, 0, -angle); // Поворот карты
+            cards[i].anchoredPosition = new Vector2(x, -y); // Устанавливаем позицию
+            cards[i].rotation = Quaternion.Euler(0, 0, -angle); // Поворот карты
         }
     }
 
     // Для теста можно вызвать метод в Start или через UI
     private void Awake()
     {
-        UpdateLayout();
-    }
-
-    public void AddCard(RectTransform newCard)
-    {
-        _cards.Add(newCard);
-
-        UpdateLayout();
-    }
-
-    public void RemoveCard(RectTransform cardToRemove)
-    {
-        // Удаляем карту из массива
-        _cards.Remove(cardToRemove);
-
         UpdateLayout();
     }
 }

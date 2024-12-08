@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Counterattack
   m_EditorClassIdentifier: 
   type: 2
-  cardFront: {fileID: 21300000, guid: 8719eb6a8d2b4104ab262a37f63e6f74, type: 3}
+  cardFront: {fileID: 21300000, guid: 9d6e902e11b507b4995cec67ee1e8d8f, type: 3}

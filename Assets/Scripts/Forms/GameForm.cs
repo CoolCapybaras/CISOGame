@@ -14,7 +14,7 @@ public class GameForm : MonoBehaviour, IForm
     public static GameForm Instance;
     public PlayerLayout playerLayout;
     private Lobby _currentLobby;
-
+    
     private int localClientId;
     [Serializable]
     public struct Form
@@ -47,6 +47,8 @@ public class GameForm : MonoBehaviour, IForm
 
     private bool _waitForPlayerPick;
     private DraggableCard _currentDroppedCard;
+    
+    private const int MaxHealth = 4;
     
     public void OnActive()
     {
@@ -111,6 +113,7 @@ public class GameForm : MonoBehaviour, IForm
             StartCoroutine(Utils.LoadTexture(player.Avatar, obj.transform.GetChild(0).GetComponent<RawImage>()));
             obj.transform.GetChild(0).GetComponent<RawImage>().DOFade(1, 0.25f);
             obj.transform.GetChild(1).GetComponent<TMP_Text>().text = player.Name;
+            obj.transform.GetChild(3).gameObject.SetActive(true);
         }
     }
 
@@ -136,6 +139,18 @@ public class GameForm : MonoBehaviour, IForm
     {
         _clientCards.Clear();
         _clientCards.AddRange(packet.cards);
+    }
+
+    public void OnClientHealthPacket(ClientHealthPacket packet)
+    {
+        if (packet.clientId == localClientId)
+        {
+            // TODO: Пока ничего не делаем
+            return;
+        }
+        
+        _clientObjects[packet.clientId].transform.GetChild(3).GetChild(0).GetComponent<Image>().fillAmount =
+            (1 / (float)MaxHealth) * packet.health;
     }
 
     public void OnClientsGotCards(ClientsGotCardsPacket packet)
@@ -168,7 +183,7 @@ public class GameForm : MonoBehaviour, IForm
         var cardObj = CardManager.Instance.GetCard(card.Type);
 
         obj.GetComponent<Image>().sprite = cardObj.cardFront;
-        form.localCardsParent.gameObject.GetComponent<CardHandLayout>().UpdateLayout();
+        UpdateLocalHandLayout();
         obj.GetComponent<DraggableCard>().tableArea = form.tableArea;
         obj.GetComponent<DraggableCard>().card = card;
     }
@@ -178,11 +193,31 @@ public class GameForm : MonoBehaviour, IForm
         _waitForPlayerPick = true;
         _currentDroppedCard = card;
 
-        card.transform.parent = form.tableArea;
+        card.transform.SetParent(form.tableArea, false);
+        card.transform.localRotation = Quaternion.identity;
         card.canDrag = false;
         SetCardsDraggable(false);
+        UpdateLocalHandLayout();
     }
 
+    public void OnCardTypeError()
+    {
+        _currentDroppedCard.transform.SetParent(form.localCardsParent, false);
+        _currentDroppedCard.transform.SetSiblingIndex(_currentDroppedCard.GetComponent<DraggableCard>().siblingIndexBeforeDrag);
+        var rect = _currentDroppedCard.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        
+        UpdateLocalHandLayout();
+        SetCardsDraggable(true);
+    }
+
+    private void UpdateLocalHandLayout()
+    {
+        form.localCardsParent.gameObject.GetComponent<CardHandLayout>().UpdateLayout();
+    }
+    
     public void OnPlayerPressed(int playerId)
     {
         if (_waitForPlayerPick)

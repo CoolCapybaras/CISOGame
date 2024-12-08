@@ -111,7 +111,13 @@ public class ClientSocket : MonoBehaviour
 				Debug.Log(packet.text);
 				break;
 			case 1:
-				//var packet = JsonUtility.FromJson<AuthPacket>(message);
+				var messagePacket = JsonUtility.FromJson<MessagePacket>(message);
+				switch (messagePacket.type)
+				{
+					case 3:
+						GameForm.Instance.OnCardTypeError();
+						break;
+				}
 				break;
 			case 8:
 				// AuthResultPacket
@@ -154,6 +160,10 @@ public class ClientSocket : MonoBehaviour
 				break;
 			case 23:
 				GameForm.Instance.OnDiscardCardsPacket();
+				break;
+			case 24:
+				var clientHealthPacket = JsonUtility.FromJson<ClientHealthPacket>(message);
+				GameForm.Instance.OnClientHealthPacket(clientHealthPacket);
 				break;
 		}
 	}
