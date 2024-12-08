@@ -40,6 +40,7 @@ public class GameForm : MonoBehaviour, IForm
     public Form form;
 
     private List<Card> _clientCards = new();
+    private List<Card> _issuedCards = new();
 
     private Dictionary<int, GameObject> _clientObjects = new();
 
@@ -91,6 +92,10 @@ public class GameForm : MonoBehaviour, IForm
 
         if (packet.targetId == localClientId)
             _lastAttackingPlayerId = packet.clientId;
+
+        var clientHand = _clientObjects[packet.clientId].transform.GetChild(2);
+        Destroy(clientHand.GetChild(0).gameObject);
+        clientHand.GetComponent<CardHandLayout>().UpdateLayout();
     }
 
     public void OnClientJoinedPacket(ClientJoinedPacket packet)
@@ -158,20 +163,9 @@ public class GameForm : MonoBehaviour, IForm
 
     public void OnSyncHandPacket(SyncHandPacket packet)
     {
+        _issuedCards = packet.cards.Except(_clientCards).ToList();
         _clientCards.Clear();
         _clientCards.AddRange(packet.cards);
-    }
-
-    public void OnClientHealthPacket(ClientHealthPacket packet)
-    {
-        if (packet.clientId == localClientId)
-        {
-            // TODO: Пока ничего не делаем
-            return;
-        }
-        
-        _clientObjects[packet.clientId].transform.GetChild(3).GetChild(0).GetComponent<Image>().fillAmount =
-            (1 / (float)MaxHealth) * packet.health;
     }
 
     public void OnClientsGotCards(ClientsGotCardsPacket packet)
@@ -186,17 +180,29 @@ public class GameForm : MonoBehaviour, IForm
         {
             if (id == localClientId)
             {
-                InstantiateLocalCard(_clientCards[localClientCardIdx]);
+                InstantiateLocalCard(_issuedCards[localClientCardIdx]);
                 localClientCardIdx++;
-                yield return new WaitForSeconds(0.25f);
+                yield return new WaitForSeconds(0.1f);
                 continue;
             }
             
             InstantiateSmallCard(_clientObjects[id]);
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitForSeconds(0.1f);
         }
     }
 
+    public void OnClientHealthPacket(ClientHealthPacket packet)
+    {
+        if (packet.clientId == localClientId)
+        {
+            // TODO: Пока ничего не делаем
+            return;
+        }
+        
+        _clientObjects[packet.clientId].transform.GetChild(3).GetChild(0).GetComponent<Image>().fillAmount =
+            (1 / (float)MaxHealth) * packet.health;
+    }    
+    
     private void InstantiateLocalCard(Card card)
     {
         var obj = Instantiate(form.cardPrefab, form.localCardsParent);
