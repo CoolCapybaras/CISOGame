@@ -227,6 +227,7 @@ public class GameForm : MonoBehaviour, IForm
         if (card.card.Type == CardType.Defense || card.card.Type == CardType.Counterattack)
         {
             ClientSocket.Instance.SendPacket(new GameActionPacket(GameAction.PlayCard, _currentDroppedCard.card, _lastAttackingPlayerId));
+            _clientCards.Remove(card.card);
             return;
         }
         _waitForPlayerPick = true;
@@ -256,6 +257,7 @@ public class GameForm : MonoBehaviour, IForm
         {
             _waitForPlayerPick = false;
             ClientSocket.Instance.SendPacket(new GameActionPacket(GameAction.PlayCard, _currentDroppedCard.card, playerId));
+            _clientCards.Remove(_currentDroppedCard.card);
         }
     }
 
