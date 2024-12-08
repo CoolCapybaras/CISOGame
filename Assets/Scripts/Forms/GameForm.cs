@@ -163,12 +163,23 @@ public class GameForm : MonoBehaviour, IForm
 
     public void OnSyncHandPacket(SyncHandPacket packet)
     {
-        _issuedCards = _clientCards.Count != 0 ? packet.cards.Except(_clientCards).ToList() : packet.cards;
+        _issuedCards = _clientCards.Count != 0 ? Except(packet.cards, _clientCards) : packet.cards;
         
         _clientCards.Clear();
         _clientCards.AddRange(packet.cards);
     }
 
+    private List<Card> Except(List<Card> cardsFirst, List<Card> cardsSecond)
+    {
+        var collection = cardsFirst.ToList();
+        foreach (var card in cardsSecond)
+        {
+            collection.Remove(card);
+        }
+
+        return collection;
+    }
+    
     public void OnClientsGotCards(ClientsGotCardsPacket packet)
     {
         CoroutineManager.Instance.StartCoroutine(InstantiateCards(packet.clientIds));
