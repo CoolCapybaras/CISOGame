@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class CardHandLayout : MonoBehaviour
@@ -46,8 +47,8 @@ public class CardHandLayout : MonoBehaviour
             y -= Mathf.Abs(angle) / angleRange * verticalSpacingFactor;
 
             // Обновляем позицию и поворот карты
-            cards[i].anchoredPosition = new Vector2(x, -y); // Устанавливаем позицию
-            cards[i].rotation = Quaternion.Euler(0, 0, -angle); // Поворот карты
+            cards[i].DOAnchorPos(new Vector2(x, -y), 0.25f); // Устанавливаем позицию
+            cards[i].DORotate(new Vector3(0, 0, -angle), 0.25f); // Поворот карты
         }
     }
 

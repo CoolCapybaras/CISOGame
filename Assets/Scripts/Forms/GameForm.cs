@@ -35,6 +35,8 @@ public class GameForm : MonoBehaviour, IForm
         public Color32 greenPlayerBorderColor;
 
         public GameObject gameButtons;
+
+        public GameObject deck;
     }
     
     public Form form;
@@ -194,12 +196,12 @@ public class GameForm : MonoBehaviour, IForm
             {
                 InstantiateLocalCard(_issuedCards[localClientCardIdx]);
                 localClientCardIdx++;
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.25f);
                 continue;
             }
             
             InstantiateSmallCard(_clientObjects[id]);
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.25f);
         }
     }
 
@@ -222,9 +224,24 @@ public class GameForm : MonoBehaviour, IForm
         var cardObj = CardManager.Instance.GetCard(card.Type);
 
         obj.GetComponent<Image>().sprite = cardObj.cardFront;
-        UpdateLocalHandLayout();
+        var sequence = DOTween.Sequence();
+        sequence.Insert(0,
+            obj.transform.DOMove(form.localCardsParent.transform.position, 0.25f)
+                .From(form.deck.transform.position))
+            .InsertCallback(0.25f, UpdateLocalHandLayout);
         obj.GetComponent<DraggableCard>().tableArea = form.tableArea;
         obj.GetComponent<DraggableCard>().card = card;
+    }
+    
+    private void InstantiateSmallCard(GameObject playerObj)
+    {
+        var obj = Instantiate(form.smallCardPrefab, playerObj.transform.GetChild(2));
+        var sequence = DOTween.Sequence();
+        sequence.Insert(0,
+            obj.transform.DOMove(playerObj.transform.GetChild(2).position, 0.25f)
+                .From(form.deck.transform.position))
+            .Insert(0, obj.transform.DOScale(1, 0.25f).From(5))
+            .InsertCallback(0.25f, () => {playerObj.transform.GetChild(2).GetComponent<CardHandLayout>().UpdateLayout(); });
     }
 
     public void OnCardDropped(DraggableCard card)
@@ -284,14 +301,7 @@ public class GameForm : MonoBehaviour, IForm
             form.localCardsParent.GetChild(i).GetComponent<DraggableCard>().canDrag = canDrag;
         }
     }
-
-    private void InstantiateSmallCard(GameObject playerObj)
-    {
-        var obj = Instantiate(form.smallCardPrefab, playerObj.transform.GetChild(2));
-
-        playerObj.transform.GetChild(2).GetComponent<CardHandLayout>().UpdateLayout();
-    }
-
+    
     public void OnClientTurnPacket(ClientTurnPacket packet)
     {
         if (_lastTurnId != -1)
