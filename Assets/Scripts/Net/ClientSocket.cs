@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class ClientSocket : MonoBehaviour
 {
@@ -111,12 +112,67 @@ public class ClientSocket : MonoBehaviour
 				Debug.Log(packet.text);
 				break;
 			case 1:
-				//var packet = JsonUtility.FromJson<AuthPacket>(message);
+				var messagePacket = JsonUtility.FromJson<MessagePacket>(message);
+				switch (messagePacket.type)
+				{
+					case 3:
+						GameForm.Instance.OnCardTypeError();
+						break;
+				}
 				break;
-			case 5:
+			case 8:
 				// AuthResultPacket
 				var authResult = JsonUtility.FromJson<AuthResultPacket>(message);
 				AuthForm.Instance.OnAuthResult(authResult);
+				break;
+			case 9:
+				var lobbySearchResult = JsonUtility.FromJson<SearchLobbyResultPacket>(message);
+				JoinGameForm.Instance.OnSearchLobbyResult(lobbySearchResult);
+				break;
+			case 10:
+				var lobbyJoinedPacket = JsonUtility.FromJson<LobbyJoinedPacket>(message);
+				GameForm.Instance.OnLobbyJoined(lobbyJoinedPacket);
+				break;
+			case 11:
+				var clientJoinedPacket = JsonUtility.FromJson<ClientJoinedPacket>(message);
+				GameForm.Instance.OnClientJoinedPacket(clientJoinedPacket);
+				break;
+			case 12:
+				var clientLeavedPacket = JsonUtility.FromJson<ClientLeavedPacket>(message);
+				GameForm.Instance.OnClientLeavedPacket(clientLeavedPacket);
+				break;
+			case 19:
+				var syncHandPacket = JsonUtility.FromJson<SyncHandPacket>(message);
+				GameForm.Instance.OnSyncHandPacket(syncHandPacket);
+				break;
+			case 20:
+				var clientsGotCardsPacket = JsonUtility.FromJson<ClientsGotCardsPacket>(message);
+				GameForm.Instance.OnClientsGotCards(clientsGotCardsPacket);
+				break;
+			case 21:
+				var clientTurnPacket = JsonUtility.FromJson<ClientTurnPacket>(message);
+				GameForm.Instance.OnClientTurnPacket(clientTurnPacket);
+				break;
+			case 13:
+				GameForm.Instance.OnBecomeHostPacket();
+				break;
+			case 17:
+				GameForm.Instance.OnGameStarted();
+				break;
+			case 23:
+				GameForm.Instance.OnDiscardCardsPacket();
+				break;
+			case 24:
+				var clientHealthPacket = JsonUtility.FromJson<ClientHealthPacket>(message);
+				GameForm.Instance.OnClientHealthPacket(clientHealthPacket);
+				break;
+			case 22:
+				var clientPlayedCardPacket = JsonUtility.FromJson<ClientPlayedCardPacket>(message); 
+				GameForm.Instance.OnClientPlayedCard(clientPlayedCardPacket);
+				break;
+			case 18:
+				var gameEndedPacket = JsonUtility.FromJson<GameEndedPacket>(message);
+				GameForm.Instance.OnGameEnded(gameEndedPacket);
 				break;
 		}
 	}
