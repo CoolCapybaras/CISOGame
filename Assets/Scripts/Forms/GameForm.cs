@@ -333,7 +333,9 @@ public class GameForm : MonoBehaviour, IForm
     {
         form.winnerScreenObj.SetActive(true);
         form.winnerScreenObj.GetComponent<CanvasGroup>().DOFade(1, 0.25f).From(0);
-        form.winnerNicknameText.text = _currentLobby.Players.First(p => p.Id == packet.clientId).Name;
+        form.winnerNicknameText.text = packet.clientId != localClientId ? 
+            _currentLobby.Players.First(p => p.Id == packet.clientId).Name : 
+            GameManager.localClient.Name;
         form.winnerParticles.Play();
     }
 
