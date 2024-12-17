@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Defense
   m_EditorClassIdentifier: 
   type: 1
-  cardFront: {fileID: 21300000, guid: 00f3a5508bc8d294aaf61a60087c732d, type: 3}
+  cardFront: {fileID: 21300000, guid: 5674f4a2dc62bea4bab11d4d906db201, type: 3}

@@ -37,6 +37,11 @@ public class GameForm : MonoBehaviour, IForm
         public GameObject gameButtons;
 
         public GameObject deck;
+        public Image timerBar;
+
+        public GameObject winnerScreenObj;
+        public TMP_Text winnerNicknameText;
+        public ParticleSystem winnerParticles;
     }
     
     public Form form;
@@ -74,6 +79,7 @@ public class GameForm : MonoBehaviour, IForm
     private void Initialize()
     {
         form.startGameButton.SetActive(_currentLobby.Players.Count == 1);
+        form.winnerScreenObj.SetActive(false);
         RecreatePlayers();
         ClearTable();
     }
@@ -316,6 +322,19 @@ public class GameForm : MonoBehaviour, IForm
         
         SetCardsDraggable(localClientId == packet.clientId);
         form.gameButtons.SetActive(localClientId == packet.clientId);
+        
+        if (localClientId != packet.clientId) return;
+        
+        DOTween.Kill(form.timerBar);
+        form.timerBar.DOFillAmount(0, 60).From(1).SetEase(Ease.Linear);
+    }
+
+    public void OnGameEnded(GameEndedPacket packet)
+    {
+        form.winnerScreenObj.SetActive(true);
+        form.winnerScreenObj.GetComponent<CanvasGroup>().DOFade(1, 0.25f).From(0);
+        form.winnerNicknameText.text = _currentLobby.Players.First(p => p.Id == packet.clientId).Name;
+        form.winnerParticles.Play();
     }
 
     public void OnBecomeHostPacket()

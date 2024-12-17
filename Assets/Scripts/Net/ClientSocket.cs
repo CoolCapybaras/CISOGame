@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class ClientSocket : MonoBehaviour
 {
@@ -168,6 +169,10 @@ public class ClientSocket : MonoBehaviour
 			case 22:
 				var clientPlayedCardPacket = JsonUtility.FromJson<ClientPlayedCardPacket>(message); 
 				GameForm.Instance.OnClientPlayedCard(clientPlayedCardPacket);
+				break;
+			case 18:
+				var gameEndedPacket = JsonUtility.FromJson<GameEndedPacket>(message);
+				GameForm.Instance.OnGameEnded(gameEndedPacket);
 				break;
 		}
 	}

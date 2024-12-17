@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Attack
   m_EditorClassIdentifier: 
   type: 0
-  cardFront: {fileID: 21300000, guid: aa8ae744745a08645b1074bea40d18a0, type: 3}
+  cardFront: {fileID: 21300000, guid: c10a15206dec1ff4881b3cd2caa4c0ae, type: 3}
