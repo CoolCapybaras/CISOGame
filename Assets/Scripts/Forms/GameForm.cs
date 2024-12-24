@@ -190,7 +190,17 @@ public class GameForm : MonoBehaviour, IForm
     
     public void OnClientsGotCards(ClientsGotCardsPacket packet)
     {
+        if (packet.clientIds.Count == 0) 
+            ReinstantiateHand();
+            
         CoroutineManager.Instance.StartCoroutine(InstantiateCards(packet.clientIds));
+    }
+
+    public void ReinstantiateHand()
+    {
+        Utils.DestroyChildren(form.localCardsParent);
+        foreach (var card in _clientCards)
+            InstantiateLocalCard(card,false);
     }
 
     private IEnumerator InstantiateCards(List<int> clientIds)
@@ -202,12 +212,12 @@ public class GameForm : MonoBehaviour, IForm
             {
                 InstantiateLocalCard(_issuedCards[localClientCardIdx]);
                 localClientCardIdx++;
-                yield return new WaitForSeconds(0.25f);
+                yield return new WaitForSeconds(0.1f);
                 continue;
             }
             
             InstantiateSmallCard(_clientObjects[id]);
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitForSeconds(0.1f);
         }
     }
 
@@ -223,20 +233,27 @@ public class GameForm : MonoBehaviour, IForm
             (1 / (float)MaxHealth) * packet.health;
     }    
     
-    private void InstantiateLocalCard(Card card)
+    private void InstantiateLocalCard(Card card, bool needAnimation = true)
     {
         var obj = Instantiate(form.cardPrefab, form.localCardsParent);
 
         var cardObj = CardManager.Instance.GetCard(card.Type);
 
         obj.GetComponent<Image>().sprite = cardObj.cardFront;
-        var sequence = DOTween.Sequence();
-        sequence.Insert(0,
-            obj.transform.DOMove(form.localCardsParent.transform.position, 0.25f)
-                .From(form.deck.transform.position))
-            .InsertCallback(0.25f, UpdateLocalHandLayout);
         obj.GetComponent<DraggableCard>().tableArea = form.tableArea;
         obj.GetComponent<DraggableCard>().card = card;
+        if (needAnimation)
+        {
+            var sequence = DOTween.Sequence();
+            sequence.Insert(0,
+                    obj.transform.DOMove(form.localCardsParent.transform.position, 0.25f)
+                        .From(form.deck.transform.position))
+                .InsertCallback(0.25f, UpdateLocalHandLayout);
+        }
+        else
+        {
+            UpdateLocalHandLayout();
+        }
     }
     
     private void InstantiateSmallCard(GameObject playerObj)

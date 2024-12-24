@@ -42,7 +42,7 @@ public class PlayerLayout : MonoBehaviour
             float angle = Mathf.Lerp(startAngle, endAngle, (float)(i - 1) / (totalPlayers - 2));
             
             // Вычисляем позицию игрока по дуге
-            float radius = 700f; // Радиус дуги
+            float radius = 550f; // Радиус дуги
             float x = Mathf.Cos(Mathf.Deg2Rad * angle) * radius;
             float y = Mathf.Sin(Mathf.Deg2Rad * angle) * radius;
 
