@@ -15,6 +15,7 @@ public class OverlayManager : MonoBehaviour
         public bool needSettingsButton;
         public bool needLeaveButton;
         public bool needBackButton;
+        public bool needRulesButton;
     }
     
     [Serializable]
@@ -24,6 +25,7 @@ public class OverlayManager : MonoBehaviour
         public GameObject settingsButton;
         public GameObject leaveButton;
         public GameObject backButton;
+        public GameObject rulesButton;
     }
 
     public Form form;
@@ -38,6 +40,7 @@ public class OverlayManager : MonoBehaviour
         form.settingsButton.SetActive(settings.needSettingsButton);
         form.leaveButton.SetActive(settings.needLeaveButton);
         form.backButton.SetActive(settings.needBackButton);
+        form.rulesButton.SetActive(settings.needRulesButton);
     }
 
     public void OnBackButtonPressed()
