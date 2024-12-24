@@ -22,12 +22,6 @@ public class AuthForm : BaseForm, IForm
         Instance = this;
     }
 
-    private void Start()
-    {
-        if (PlayerPrefs.HasKey("auth_token"))
-            ClientSocket.Instance.SendPacket(new AuthPacket(AuthType.Token, PlayerPrefs.GetString("auth_token")));
-    }
-
     public Form form;
 
     public void OnAnonymousLoginPressed()

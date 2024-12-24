@@ -6,6 +6,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using CISOServer.Net.Packets.Serverbound;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -106,6 +107,9 @@ public class ClientSocket : MonoBehaviour
 		{
 			case -1:
 				// OnOpen
+				
+				if (PlayerPrefs.HasKey("auth_token"))
+					SendPacket(new AuthPacket(AuthType.Token, PlayerPrefs.GetString("auth_token"))); 
 				break;
 			case 0:
 				var packet = JsonUtility.FromJson<MessagePacket>(message);
