@@ -181,26 +181,26 @@ public class GameForm : MonoBehaviour, IForm
     {
         var collection = cardsFirst.ToList();
         foreach (var card in cardsSecond)
-        {
             collection.Remove(card);
-        }
 
         return collection;
     }
     
     public void OnClientsGotCards(ClientsGotCardsPacket packet)
     {
-        if (packet.clientIds.Count == 0) 
-            ReinstantiateHand();
+        if (packet.clientIds.Count == 0)
+            StartCoroutine(ReinstantiateHand());
             
         CoroutineManager.Instance.StartCoroutine(InstantiateCards(packet.clientIds));
     }
 
-    public void ReinstantiateHand()
+    private IEnumerator ReinstantiateHand()
     {
         Utils.DestroyChildren(form.localCardsParent);
+        yield return new WaitForFixedUpdate();
         foreach (var card in _clientCards)
-            InstantiateLocalCard(card,false);
+            InstantiateLocalCard(card, false); 
+        UpdateLocalHandLayout(false);
     }
 
     private IEnumerator InstantiateCards(List<int> clientIds)
@@ -248,11 +248,7 @@ public class GameForm : MonoBehaviour, IForm
             sequence.Insert(0,
                     obj.transform.DOMove(form.localCardsParent.transform.position, 0.25f)
                         .From(form.deck.transform.position))
-                .InsertCallback(0.25f, UpdateLocalHandLayout);
-        }
-        else
-        {
-            UpdateLocalHandLayout();
+                .InsertCallback(0.25f, () => { UpdateLocalHandLayout(); });
         }
     }
     
@@ -297,9 +293,9 @@ public class GameForm : MonoBehaviour, IForm
         SetCardsDraggable(true);
     }
 
-    private void UpdateLocalHandLayout()
+    private void UpdateLocalHandLayout(bool needAnimation = true)
     {
-        form.localCardsParent.gameObject.GetComponent<CardHandLayout>().UpdateLayout();
+        form.localCardsParent.gameObject.GetComponent<CardHandLayout>().UpdateLayout(needAnimation);
     }
     
     public void OnPlayerPressed(int playerId)

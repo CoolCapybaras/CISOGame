@@ -11,7 +11,7 @@ public class CardHandLayout : MonoBehaviour
     public float horizontalSpacingFactor = 50f; // Горизонтальное смещение
     public float verticalSpacingFactor = 50f;
     
-    public void UpdateLayout()
+    public void UpdateLayout(bool needAnimation = true)
     {
         List<RectTransform> cards = new();
         foreach (var obj in transform)
@@ -47,8 +47,15 @@ public class CardHandLayout : MonoBehaviour
             y -= Mathf.Abs(angle) / angleRange * verticalSpacingFactor;
 
             // Обновляем позицию и поворот карты
-            cards[i].DOAnchorPos(new Vector2(x, -y), 0.25f); // Устанавливаем позицию
-            cards[i].DORotate(new Vector3(0, 0, -angle), 0.25f); // Поворот карты
+            if (needAnimation)
+            {
+                cards[i].DOAnchorPos(new Vector2(x, -y), 0.25f); // Устанавливаем позицию
+                cards[i].DORotate(new Vector3(0, 0, -angle), 0.25f); // Поворот карты
+                continue;
+            }
+
+            cards[i].anchoredPosition = new Vector2(x, -y);
+            cards[i].rotation = Quaternion.Euler(new Vector3(0, 0, -angle));
         }
     }
 
