@@ -121,6 +121,7 @@ public class ClientSocket : MonoBehaviour
 				{
 					case 3:
 						GameForm.Instance.OnCardTypeError();
+						InfoManager.Instance.ShowInfo(messagePacket.text);
 						break;
 				}
 				break;
@@ -177,6 +178,10 @@ public class ClientSocket : MonoBehaviour
 			case 18:
 				var gameEndedPacket = JsonUtility.FromJson<GameEndedPacket>(message);
 				GameForm.Instance.OnGameEnded(gameEndedPacket);
+				break;
+			case 25:
+				var clientDiedPacket = JsonUtility.FromJson<ClientDiedPacket>(message);
+				GameForm.Instance.OnClientDied(clientDiedPacket);
 				break;
 		}
 	}

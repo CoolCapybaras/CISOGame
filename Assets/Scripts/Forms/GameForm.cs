@@ -42,6 +42,8 @@ public class GameForm : MonoBehaviour, IForm
         public GameObject winnerScreenObj;
         public TMP_Text winnerNicknameText;
         public ParticleSystem winnerParticles;
+
+        public Image localClientHealth;
     }
     
     public Form form;
@@ -169,6 +171,12 @@ public class GameForm : MonoBehaviour, IForm
         form.startGameButton.SetActive(false);
     }
 
+    public void OnClientDied(ClientDiedPacket packet)
+    {
+        if (packet.clientId == localClientId)
+            InfoManager.Instance.ShowInfo("Вы выбыли из игры");
+    }
+
     public void OnSyncHandPacket(SyncHandPacket packet)
     {
         _issuedCards = _clientCards.Count != 0 ? Except(packet.cards, _clientCards) : packet.cards;
@@ -225,7 +233,7 @@ public class GameForm : MonoBehaviour, IForm
     {
         if (packet.clientId == localClientId)
         {
-            // TODO: Пока ничего не делаем
+            form.localClientHealth.fillAmount = (1 / (float)MaxHealth) * packet.health;
             return;
         }
         
@@ -350,6 +358,7 @@ public class GameForm : MonoBehaviour, IForm
             _currentLobby.Players.First(p => p.Id == packet.clientId).Name : 
             GameManager.localClient.Name;
         form.winnerParticles.Play();
+        DOTween.Kill(form.timerBar);
     }
 
     public void OnBecomeHostPacket()
