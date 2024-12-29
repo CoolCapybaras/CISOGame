@@ -44,6 +44,7 @@ public class GameForm : MonoBehaviour, IForm
         public ParticleSystem winnerParticles;
 
         public Image localClientHealth;
+        public GameObject playerPickText;
     }
     
     public Form form;
@@ -285,6 +286,7 @@ public class GameForm : MonoBehaviour, IForm
             _clientCards.Remove(card.card);
             return;
         }
+        form.playerPickText.SetActive(true);
         _waitForPlayerPick = true;
     }
 
@@ -296,7 +298,7 @@ public class GameForm : MonoBehaviour, IForm
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.pivot = new Vector2(0.5f, 0.5f);
-        
+        form.playerPickText.SetActive(false);
         UpdateLocalHandLayout();
         SetCardsDraggable(true);
     }
@@ -313,6 +315,7 @@ public class GameForm : MonoBehaviour, IForm
             _waitForPlayerPick = false;
             ClientSocket.Instance.SendPacket(new GameActionPacket(GameAction.PlayCard, _currentDroppedCard.card, playerId));
             _clientCards.Remove(_currentDroppedCard.card);
+            form.playerPickText.SetActive(false);
         }
     }
 
@@ -370,5 +373,9 @@ public class GameForm : MonoBehaviour, IForm
     public void OnEndTurnPressed()
     {
         ClientSocket.Instance.SendPacket(new GameActionPacket(action: GameAction.EndTurn));
+        if (!_waitForPlayerPick) return;
+        
+        form.playerPickText.SetActive(false);
+        OnCardTypeError();
     }
 }
