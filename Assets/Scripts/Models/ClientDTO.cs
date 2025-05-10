@@ -1,13 +1,15 @@
+using System;
 using CISOServer.Net.Packets.Clientbound;
 using System.Collections.Generic;
 
+[Serializable]
 public class ClientDTO
 {
-	public int Id { get; set; }
-	public string Name { get; set; }
-	public string Avatar { get; set; }
-	public ClientState State { get; set; }
-	public int Health { get; set; }
+	public int Id;
+	public string Name;
+	public string Avatar;
+	public ClientState State;
+	public int Health;
 	public HashSet<Character> Characters { get; }
-	public int CardCount { get; set; }
+	public int CardCount;
 }

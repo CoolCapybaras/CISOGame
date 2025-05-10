@@ -1,7 +1,7 @@
 mergeInto(LibraryManager.library, {
 
   StartSocket: function () {
-    ws = new WebSocket('ws://localhost:8887');
+    ws = new WebSocket('wss://uplixx.ru/ws');
     ws.onopen = function() {
 	  MyGameInstance.SendMessage('Canvas', 'OnMessage', '{"id":-1}');
     };

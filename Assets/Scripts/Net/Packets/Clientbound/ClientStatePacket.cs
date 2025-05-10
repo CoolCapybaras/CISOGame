@@ -2,8 +2,9 @@
 {
 	public enum ClientState
 	{
-		Ok,
-		ConnectionError
+		InGame,
+		ConnectionError,
+		Disconnected
 	}
 
 	public class ClientStatePacket : IPacket
